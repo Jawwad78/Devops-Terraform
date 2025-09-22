@@ -1,62 +1,29 @@
 
-# WordPress Deployment on AWS with Terraform 🌍
+# WordPress Deployment on AWS with Terraform 
 
 ## Overview
 
-This project sets up a full WordPress environment on AWS using **Terraform** and **Cloud-init**. The goal was to build and automate a real world style setup with separate modules, so that WordPress is ready to run as soon as the servers start.
+With this project, I had to use terraform IaC to launch wordpress. Then i had to configure cloud-init for the ec2 iinstances instead of nomral user_data
 
+## Architecture 
 
-## Architecture 🏗️
+The setup followed a 3 tier architecture:
 
-The setup follows a three-tier architecture:
-
-* **VPC** with 6 subnets across 2 AZs (public, private app, private DB)
-* **Bastion host** in a public subnet for SSH access
-* **Two EC2 instances** in private subnets running Apache, PHP, and WordPress
+* **VPC** I created 6 subnets: 2 in public, 2 in private and 2 in private db for rds
+* **Bastion host** was put in public subnet for me to then ssh into private ec2 subnets (as we cant do it without 1)
+* **Two EC2 instances** in private subnets running Apache, PHP, and WordPress (this makes them more safer)
 * **RDS MySQL instance** in private DB subnets
-* **Application Load Balancer** in public subnets forwarding traffic to EC2s
+* **Application Load Balancer** in public subnets forwarding the traffic from the internet to  the EC2s
 
-**Security groups** were created for each layer:
+**Security groups** I created security groups for all 4 :
 
-* ALB allows HTTP and HTTPS from anywhere
-* Bastion allows SSH only from my IP
-* App allows traffic from ALB (80/443) and Bastion (22)
-* RDS allows MySQL only from the App SG
-
----
-
-## Project Structure  
-
-The repository is organised into separate modules for clarity.  
-
-```plaintext
-.
-├── main.tf                  # Root config: wires modules together
-├── variables.tf             # Input variables for root
-├── provider.tf              # AWS provider setup
-├── backend.tf               # Remote backend config (if used)
-├── outputs.tf               # Root outputs (ALB DNS, Bastion IP, etc.)
-├── terraform.tfvars         # Variable values (DB creds, AMI, etc.)
-└── modules/
-    ├── vpc/
-    │   ├── main.tf          # VPC, subnets, route tables, IGW, NAT
-    │   └── outputs.tf
-    ├── ec2/
-    │   ├── main.tf          # Bastion + 2 app servers
-    │   ├── variables.tf
-    │   ├── outputs.tf
-    │   └── wordpress.tpl    # Cloud-init YAML for WordPress
-    ├── rds/
-    │   ├── main.tf          # RDS instance + subnet group
-    │   ├── variables.tf
-    │   └── outputs.tf
-    └── alb/
-        ├── main.tf          # Load balancer, target groups, listeners
-        ├── variables.tf
-        └── outputs.tf
-```
+* ALB allows HTTP and HTTPS from anywhere (so anyone on internet can acces the alb)
+* Bastion allows SSH only from my IP (as we dont want other people to access it)
+* App allows traffic from ALB (80/443) and Bastion (22) 
+* RDS allows MySQL only from the App SG (as nothing else needs it, also used port 3306)
 
 ---
+
 
 ## Terraform Modules
 
@@ -69,41 +36,37 @@ The project is modularised into:
 
 ---
 
-## Cloud-init for WordPress ⚙️
+## Cloud-init for WordPress 
 
-I replaced plain Bash user data with a **cloud-init YAML** template.
+Before cloud-init I ran it as user_data only, but then the 2nd part of the assignment was to do it via cloud-init.
+After doing some research, I realised it would be in a YAML file, so I had to read some documentation on how to do it.
 
-* `packages:` installs Apache and all required PHP extensions
-* `runcmd:` downloads WordPress, sets ownership, permissions, and restarts Apache
+When I initially done it, I was trying to do it in a list format but found it a bit confusing due to syntax, so then I switched it to a string format which was much easier.
+
+* `packages:` this command ran the packages to install Apache and then the php extensions which Apache needed, like php-mysql for wordPress
+
+* `runcmd:` this command actually downloaded Wordpress etc and then restarted apache.
 
 ---
 
-## Problems I Encountered ❗
+## Problems I Encountered
 
-I faced many issues and it really made me learn,  but these three were the biggest:
+I faced a few issues when doing this assignment, but overall it actually helped me understand it, so it was good.
+The 2 main ones were:
 
 1. **Understanding modules**
-   At the start I didn’t really understand how Terraform modules worked. I was writing everything in one place and it got messy. Once I learned how to split resources into proper modules for VPC, EC2, RDS, and ALB, the whole project became much cleaner and easier to manage.
+When I first done the assignment and got WordPress running, I realised that I had not put it into modules. After that I knew I had to modularise it so it was easier to understand, etc. This then really took a while as I had to understand what to reference where, and also about outputs.tf and how they output to other modules and root.
 
 2. **User data for WordPress**
-  Getting WordPress to install automatically was a real challenge. At first I used a plain Bash script inside user data, then I struggled to switch it into cloud-init YAML. With the documentation and some trial and error I finally got it working using packages: and runcmd
+When I did the user_data, I was struggling with the commands needed to install apache and download wordpress, but then after reading a blog where someone else had previously done something similar to this, I copied the code from there which then made it easier.
 
-3. **Bastion host** “In my troubleshooting I first thought the bastion SG outbound rule was blocking the ALB. In reality, it only blocked my ability to test from the bastion ,the ALB path itself was fine. Fixing the SG still helped me confirm everything was working
----
+
 
 ## Validation and Testing
 
-* `terraform validate` passed without errors
-* Full `terraform apply` created the environment successfully
-* WordPress was accessible through the **ALB DNS name**
-* Connected a domain with ACM certificate → worked over HTTPS
+* `terraform validate` I used this to see if all the code was valid and nothing needed changing
+* Full `terraform apply` actually created everything, which I then checked in the aws console and it all worked properly
+* WordPress was accessible through the ALB DNS name, which I then also connected to my domain with an acm certificate for https (security)
 
----
 
-## Key Learnings 📚
-
-* How to properly modularise infrastructure (VPC, EC2, RDS, ALB)
-* Correct use of **Cloud-init** with Terraform variable injection
-* Debugging AWS networking and outputs when things fail
-* Importance of clear outputs for inter-module connections
 
