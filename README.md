@@ -88,7 +88,7 @@ I faced many issues and it really made me learn,  but these three were the bigge
 2. **User data for WordPress**
   Getting WordPress to install automatically was a real challenge. At first I used a plain Bash script inside user data, then I struggled to switch it into cloud-init YAML. With the documentation and some trial and error I finally got it working using packages: and runcmd
 
-3. **Private EC2s had no internet** My NAT Gateway had no Elastic IP, and my Bastion SG was restricted to outbound 22 only. This stopped updates and WordPress bootstrap. Assigning an Elastic IP and fixing outbound rules solved it.
+3. **Bastion host** “In my troubleshooting I first thought the bastion SG outbound rule was blocking the ALB. In reality, it only blocked my ability to test from the bastion ,the ALB path itself was fine. Fixing the SG still helped me confirm everything was working
 ---
 
 ## Validation and Testing
