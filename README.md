@@ -25,6 +25,34 @@ The setup follows a three-tier architecture:
 
 ---
 
+## Project Structure
+
+The repository is organised into separate modules for clarity.
+.
+├── main.tf                  # Root config: wires modules together
+├── variables.tf             # Input variables for root
+├── provider.tf              # AWS provider setup
+├── backend.tf               # Remote backend config (if used)
+├── outputs.tf               # Root outputs (ALB DNS, Bastion IP, etc.)
+├── terraform.tfvars         # Variable values (DB creds, AMI, etc.)
+└── modules/
+    ├── vpc/
+    │   ├── main.tf          # VPC, subnets, route tables, IGW, NAT
+    │   └── outputs.tf
+    ├── ec2/
+    │   ├── main.tf          # Bastion + 2 app servers
+    │   ├── variables.tf
+    │   ├── outputs.tf
+    │   └── wordpress.tpl    # Cloud-init YAML for WordPress
+    ├── rds/
+    │   ├── main.tf          # RDS instance + subnet group
+    │   ├── variables.tf
+    │   └── outputs.tf
+    └── alb/
+        ├── main.tf          # Load balancer, target groups, listeners
+        ├── variables.tf
+        └── outputs.tf
+
 ## Terraform Modules
 
 The project is modularised into:
