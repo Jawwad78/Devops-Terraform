@@ -13,7 +13,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 #create an elastic ip for the nat gateway
-resource "aws_eip" "lb" {
+resource "aws_eip" "nat" {
   domain = "vpc"
   depends_on = [aws_internet_gateway.igw]
 }
@@ -21,10 +21,10 @@ resource "aws_eip" "lb" {
 
 #create a NAT gateway
 resource "aws_nat_gateway" "example" {
-  allocation_id = aws_eip.lb.allocation_id
-  subnet_id     = var.public_subnet_id
+  allocation_id = aws_eip.nat.allocation_id
+  subnet_id     = aws_subnet.public_subnet_az1.id
   tags = {
-    Name = " NAT gateway"
+    Name = "NAT gateway"
   }
 
   # making sure it depends ON then igw itself (optional)

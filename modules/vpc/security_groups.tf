@@ -1,7 +1,7 @@
 #creating sg for alb
 resource "aws_security_group" "alb" {
   name        = "alb"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = aws_vpc.terraform_assignment.id
 
   tags = {
     Name = "alb"
@@ -47,7 +47,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_outbound2"{
 #creating sg for bastion host
 resource "aws_security_group" "bastionhost" {
   name        = "bastionhost"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = aws_vpc.terraform_assignment.id
 
   tags = {
     Name = "bastion host"
@@ -62,7 +62,7 @@ resource "aws_vpc_security_group_ingress_rule" "inbound_bastion" {
   to_port           = var.ssh
 }
 
-resource "aws_vpc_security_group_egress_rule" "oubound_bastion"{
+resource "aws_vpc_security_group_egress_rule" "outbound_bastion"{
   security_group_id = aws_security_group.bastionhost.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
@@ -72,7 +72,7 @@ resource "aws_vpc_security_group_egress_rule" "oubound_bastion"{
 #creating sg for priavte ec2s app
 resource "aws_security_group" "app" {
   name        = "apptier"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = aws_vpc.terraform_assignment.id
 
   tags = {
     Name = "apptier"
@@ -123,7 +123,7 @@ resource "aws_vpc_security_group_egress_rule" "outbound_apptier_2" {
 #creating sg for rds 
 resource "aws_security_group" "rds" {
   name        = "rds"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = aws_vpc.terraform_assignment.id
 
   tags = {
     Name = "rds"

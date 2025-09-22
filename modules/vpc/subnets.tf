@@ -1,6 +1,6 @@
 #creating the subnets for AZ's
 resource "aws_subnet" "public_subnet_az1" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.0.0/20"
   availability_zone = var.availability_zone_1
   
@@ -12,7 +12,7 @@ resource "aws_subnet" "public_subnet_az1" {
 
 
 resource "aws_subnet" "public_subnet_az2" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.16.0/20"
   availability_zone = var.availability_zone_2
 
@@ -21,7 +21,7 @@ resource "aws_subnet" "public_subnet_az2" {
   }
 } 
   resource "aws_subnet" "private_subnet_az1" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.128.0/20"
   availability_zone = var.availability_zone_1
 
@@ -31,7 +31,7 @@ resource "aws_subnet" "public_subnet_az2" {
 }
 
   resource "aws_subnet" "private_subnet_az2" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.144.0/20"
   availability_zone = var.availability_zone_2
 
@@ -41,7 +41,7 @@ resource "aws_subnet" "public_subnet_az2" {
 }
 
   resource "aws_subnet" "private_subnet_rds" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.160.0/20"
   availability_zone = var.availability_zone_1
   
@@ -52,7 +52,7 @@ resource "aws_subnet" "public_subnet_az2" {
 }
 
   resource "aws_subnet" "private_subnet_rds_2" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id     = aws_vpc.terraform_assignment.id
   cidr_block = "10.0.176.0/24"
   availability_zone = var.availability_zone_2
 
@@ -63,12 +63,12 @@ resource "aws_subnet" "public_subnet_az2" {
 
 # creting route table pointing to internet gateway
 resource "aws_route_table" "publicroute" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.terraform_assignment.id
   
 
  route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = module.vpc.internet_gateway 
+    gateway_id = aws_internet_gateway.igw.id
   }
   tags = {
     Name = "route_to_igw"
@@ -77,20 +77,20 @@ resource "aws_route_table" "publicroute" {
 
 # creting route table pointing to nat gateway
 resource "aws_route_table" "route_nat" {
-  vpc_id = module.vpc.vpc_id 
+  vpc_id = aws_vpc.terraform_assignment.id
 
  route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = module.vpc.nat_gateway
-  }
-  tags = {
+    nat_gateway_id = aws_nat_gateway.example.id
+ }
+    tags = {
     Name = "route_to_nat"
   }
 }
 
 # creating route table for rds
 resource "aws_route_table" "rds" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.terraform_assignment.id
   
   # Initially I added this route, but later realised it wasn’t needed
 # route {
