@@ -25,9 +25,11 @@ The setup follows a three-tier architecture:
 
 ---
 
-## Project Structure
+## Project Structure  
 
-The repository is organised into separate modules for clarity.
+The repository is organised into separate modules for clarity.  
+
+```plaintext
 .
 ├── main.tf                  # Root config: wires modules together
 ├── variables.tf             # Input variables for root
@@ -52,6 +54,9 @@ The repository is organised into separate modules for clarity.
         ├── main.tf          # Load balancer, target groups, listeners
         ├── variables.tf
         └── outputs.tf
+```
+
+---
 
 ## Terraform Modules
 
