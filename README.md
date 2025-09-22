@@ -3,7 +3,7 @@
 
 ## Overview
 
-With this project, I had to use terraform IaC to launch wordpress. Then i had to configure cloud-init for the ec2 iinstances instead of nomral user_data
+With this project, I had to use terraform IaC to launch wordpress. Then I had to configure cloud-init for the ec2 instances instead of normal user_data
 
 ## Architecture 
 
