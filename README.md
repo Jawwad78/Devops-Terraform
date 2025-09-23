@@ -10,7 +10,7 @@ With this project, I had to use terraform IaC to launch wordpress. Then I had to
 The setup followed a 3 tier architecture:
 
 * **VPC** I created 6 subnets: 2 in public, 2 in private and 2 in private db for rds
-* **Bastion host** was put in public subnet for me to then ssh into private ec2 subnets (as we cant do it without 1)
+* **Bastion host** was put in public subnet for me to then ssh into private ec2 subnets (as we cant do it without one)
 * **Two EC2 instances** in private subnets running Apache, PHP, and WordPress (this makes them more safer)
 * **RDS MySQL instance** in private DB subnets
 * **Application Load Balancer** in public subnets forwarding the traffic from the internet to  the EC2s
