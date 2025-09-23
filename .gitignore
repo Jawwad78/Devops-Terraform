@@ -1,5 +1,5 @@
 *.pem
-*.key
+*.key.tf
 *.tfstate
 *.tfstate.backup
 .terraform/
